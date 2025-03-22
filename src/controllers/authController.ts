@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import supabase from '../config/supabase';
 import jwt from 'jsonwebtoken';
+import { sendError, sendSuccess } from '../utils/responseUtils';
 
 
 // Register Controller
@@ -10,7 +11,7 @@ const registerController = async (req: express.Request, res: express.Response) =
         const { email, password, name } = req.body;
 
         if (!email || !password || !name) {
-            res.status(400).json({ error: 'Email, password, and name are required' });
+            sendError(res, 'Email, password, and name are required', 400);
             return;
         }
 
@@ -22,11 +23,11 @@ const registerController = async (req: express.Request, res: express.Response) =
             .limit(1);
 
         if (fetchError) {
-            res.status(500).json({ error: fetchError.message });
+            sendError(res, fetchError.message, 500);
             return;
         }
         if (existingUsers && existingUsers.length > 0) {
-            res.status(400).json({ error: 'Email already in use' });
+            sendError(res, 'Email already in use', 409);
             return;
         }
 
@@ -40,7 +41,7 @@ const registerController = async (req: express.Request, res: express.Response) =
             .select('id, email, name');
 
         if (error) {
-            res.status(500).json({ error: error.message });
+            sendError(res, error.message, 500);
             return;
         }
 
@@ -56,9 +57,10 @@ const registerController = async (req: express.Request, res: express.Response) =
             sameSite: 'strict',
             maxAge: 24 * 60 * 60 * 1000
         })
-        res.status(201).json({ status: 'success', data: user, message: 'User registered successfully' });
+
+        sendSuccess(res, user, 'User registered successfully', 201);
     } catch (error) {
-        res.status(500).json({ error: (error as Error).message });
+        sendError(res, (error as Error).message, 500);
     }
 };
 
@@ -68,7 +70,7 @@ const loginController = async (req: express.Request, res: express.Response) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            res.status(400).json({ error: 'Email and password are required' });
+            sendError(res, 'Email and password are required', 400);
             return;
         }
 
@@ -80,7 +82,7 @@ const loginController = async (req: express.Request, res: express.Response) => {
             .limit(1);
 
         if (error || !users || users.length === 0) {
-            res.status(401).json({ error: 'Invalid credentials' });
+            sendError(res, 'Invalid credentials', 401);
             return;
         }
 
@@ -89,7 +91,7 @@ const loginController = async (req: express.Request, res: express.Response) => {
         // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            res.status(401).json({ error: 'Invalid credentials' });
+            sendError(res, 'Invalid credentials', 401);
             return;
         }
 
@@ -103,15 +105,16 @@ const loginController = async (req: express.Request, res: express.Response) => {
             sameSite: 'strict',
             maxAge: 24 * 60 * 60 * 1000
         })
-        res.status(200).json({ status: 'success', data: user, message: 'User logged in successfully' });
+        const { password: _, ...userWithoutPassword } = user;
+        sendSuccess(res, userWithoutPassword, 'User logged in successfully', 200);
     } catch (error) {
-        res.status(500).json({ error: (error as Error).message });
+        sendError(res, (error as Error).message, 500);
     }
 };
 
 const logoutController = async (req: express.Request, res: express.Response) => {
     res.clearCookie('token');
-    res.status(200).json({ status: 'success', message: 'User logged out successfully' });
+    sendSuccess(res, null, 'User logged out successfully', 200);
 };
 
 export { registerController, loginController, logoutController };
