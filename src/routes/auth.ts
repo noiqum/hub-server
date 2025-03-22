@@ -64,7 +64,7 @@ router.post('/login', async (req, res) => {
         // Fetch user from Supabase
         const { data: users, error } = await supabase
             .from('users')
-            .select('id, email, password, name')
+            .select('id, email, password, name, role')
             .eq('email', email)
             .limit(1);
 
@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
 
         // Generate JWT
         const token = jwt.sign(
-            { id: user.id, email: user.email, name: user.name },
+            { id: user.id, email: user.email, name: user.name, role: user.role },
             process.env.JWT_SECRET || 'fallback_secret',
             { expiresIn: '1d' }
         );
