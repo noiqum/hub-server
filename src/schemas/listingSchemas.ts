@@ -25,6 +25,11 @@ export const updateListingSchema = z.object({
     description: z.string().optional(),
     price: z.number().positive().optional(),
     area: z.number().positive().optional(),
+    image_urls: z.array(z.string()).optional(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+    type: z.string().optional(),
+
 }).refine(data => Object.keys(data).length > 0, {
     message: "At least one field must be provided for update"
 });

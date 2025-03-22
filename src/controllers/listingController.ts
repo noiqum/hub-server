@@ -112,8 +112,7 @@ export const updateListing = async (req: Request, res: Response): Promise<void> 
         const { data, error } = await supabase
             .from('listings')
             .update({
-                ...listingData,
-                updated_at: new Date().toISOString()
+                ...listingData
             })
             .eq('id', id)
             .select();
@@ -139,6 +138,41 @@ export const updateListing = async (req: Request, res: Response): Promise<void> 
 export const deleteListing = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
+
+        // Extract userId from the token
+        const { userId, email } = req.user as { userId: string, email: string, iat: number, exp: number };
+
+        // Since role is not in the token, fetch the user's role from the database
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', userId)
+            .single();
+
+        if (userError) throw userError;
+
+        // Get the user's role
+        const role = userData?.role;
+
+        // Get the listing data
+        const { data: listingData, error: listingError } = await supabase
+            .from('listings')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (listingError) throw listingError;
+
+        if (!listingData) {
+            sendError(res, 'Listing not found', 404);
+            return;
+        }
+
+        // Check if the user is the owner of the listing or an admin
+        if (listingData.user_id !== userId && role !== 'admin') {
+            sendError(res, 'You are not authorized to delete this listing', 403);
+            return;
+        }
 
         const { error } = await supabase
             .from('listings')

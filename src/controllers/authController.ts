@@ -37,8 +37,8 @@ const registerController = async (req: express.Request, res: express.Response) =
         // Insert user into database
         const { data, error } = await supabase
             .from('users')
-            .insert([{ email, password: hashedPassword, name }])
-            .select('id, email, name');
+            .insert([{ email, password: hashedPassword, name, role: 'user' }])
+            .select('id, email, name, role');
 
         if (error) {
             sendError(res, error.message, 500);
@@ -48,7 +48,7 @@ const registerController = async (req: express.Request, res: express.Response) =
         const user = data[0];
 
         // Generate JWT token
-        const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET!, {
+        const token = jwt.sign({ userId: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET!, {
             expiresIn: '1h',
         });
         res.cookie('token', token, {
@@ -96,7 +96,7 @@ const loginController = async (req: express.Request, res: express.Response) => {
         }
 
         // Generate JWT token
-        const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET!, {
+        const token = jwt.sign({ userId: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET!, {
             expiresIn: '1h',
         });
         res.cookie('token', token, {
