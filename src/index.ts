@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import authRoutes from "./routes/authRoutes"
 import authMiddleware from './middleware/auth'
+import cookieParser from 'cookie-parser'
 
 
 // Extend the Request interface to include the user property
@@ -17,6 +18,7 @@ dotenv.config()
 
 const app = express()
 app.use(express.json())
+app.use(cookieParser())
 
 const PORT = process.env.PORT || 5000
 

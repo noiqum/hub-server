@@ -4,7 +4,6 @@ import supabase from '../config/supabase';
 import jwt from 'jsonwebtoken';
 
 
-
 // Register Controller
 const registerController = async (req: express.Request, res: express.Response) => {
     try {
@@ -51,8 +50,13 @@ const registerController = async (req: express.Request, res: express.Response) =
         const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET!, {
             expiresIn: '1h',
         });
-
-        res.status(201).json({ user, token });
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000
+        })
+        res.status(201).json({ status: 'success', data: user, message: 'User registered successfully' });
     } catch (error) {
         res.status(500).json({ error: (error as Error).message });
     }
@@ -93,11 +97,21 @@ const loginController = async (req: express.Request, res: express.Response) => {
         const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET!, {
             expiresIn: '1h',
         });
-
-        res.status(200).json({ user, token });
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000
+        })
+        res.status(200).json({ status: 'success', data: user, message: 'User logged in successfully' });
     } catch (error) {
         res.status(500).json({ error: (error as Error).message });
     }
 };
 
-export { registerController, loginController };
+const logoutController = async (req: express.Request, res: express.Response) => {
+    res.clearCookie('token');
+    res.status(200).json({ status: 'success', message: 'User logged out successfully' });
+};
+
+export { registerController, loginController, logoutController };
