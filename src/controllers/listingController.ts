@@ -50,17 +50,18 @@ export const getListingById = async (req: Request, res: Response): Promise<void>
 
         const { data, error } = await supabase
             .from('listings')
-            .select(`
-        *,
-        comments(*)
-      `)
+            .select('*')
             .eq('id', id)
             .single();
 
-        if (error) throw error;
-
-        if (!data) {
-            sendError(res, 'Listing not found', 404);
+        if (error) {
+            // Check if the error is because no row was found
+            if (error.message.includes('multiple (or no) rows returned')) {
+                sendError(res, 'Listing not found', 404);
+                return;
+            }
+            // Otherwise, it's a server error
+            sendError(res, error.message, 500);
             return;
         }
 
