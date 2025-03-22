@@ -1,7 +1,8 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import authRoutes from "./routes/authRoutes"
-import authMiddleware from './middleware/auth'
+import listingRoutes from "./routes/listingRoutes"
+import authMiddleware from './middleware/authMiddleware'
 import cookieParser from 'cookie-parser'
 
 
@@ -23,6 +24,7 @@ app.use(cookieParser())
 const PORT = process.env.PORT || 5000
 
 app.use('/api/auth', authRoutes)
+app.use("/api/listing", listingRoutes)
 // test route for protected route
 app.get('/api/protected', authMiddleware, (req, res) => {
     res.json({ message: 'You have accessed a protected route', user: req.user })
