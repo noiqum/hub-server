@@ -1,6 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import authRoutes from './routes/auth'
+import authRoutes from "./routes/authRoutes"
 import authMiddleware from './middleware/auth'
 
 
