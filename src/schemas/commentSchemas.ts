@@ -11,7 +11,7 @@ export type CommentResponseDto = z.infer<typeof commentResponseSchema>;
 export type CreateCommentDto = z.infer<typeof createCommentSchema>;
 
 // Response schema (for type inference)
-const commentResponseSchema = z.object({
+export const commentResponseSchema = z.object({
     id: z.string().uuid(),
     user_id: z.string().uuid(),
     listing_id: z.string().uuid(),

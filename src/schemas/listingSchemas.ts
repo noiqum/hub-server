@@ -1,13 +1,22 @@
 
 
 import { z } from 'zod';
+import { commentResponseSchema } from './commentSchemas'; // Adjust the path as needed
+
+export type listing_type = "house" | "land" | "office";
 
 // Request schemas
 export const createListingSchema = z.object({
+    type: z.string({ required_error: "Type is required" }),
     title: z.string({ required_error: "Title is required" }),
+    user_id: z.string({ required_error: "User ID is required" }).uuid(),
     description: z.string({ required_error: "Description is required" }),
     price: z.number({ required_error: "Price is required" }).positive(),
     area: z.number().positive().optional(),
+    image_urls: z.array(z.string()).optional(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+
     // Add other fields as needed
 });
 
@@ -32,6 +41,9 @@ const listingResponseSchema = z.object({
     description: z.string(),
     price: z.number(),
     area: z.number().optional(),
+    image_urls: z.array(z.string()).optional(),
+    user_id: z.string().uuid(),
+    comments: z.array(commentResponseSchema).optional(),
     created_at: z.string().or(z.date()),
     updated_at: z.string().or(z.date()),
 });

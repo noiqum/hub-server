@@ -86,7 +86,6 @@ export const createListing = async (req: Request, res: Response): Promise<void> 
                     id: uuidv4(),
                     ...listingData,
                     created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
                 }
             ])
             .select();
