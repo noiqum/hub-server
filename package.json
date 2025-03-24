@@ -4,11 +4,16 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
     "start": "node dist/index.js",
     "lint": "eslint . --ext .ts",
     "vercel-build": "npm run build"
   },
+  "pre-commit": [
+    "ts.check",
+    "build"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -23,6 +28,8 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.14.1",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^6.0.1",
     "uuid": "^11.1.0",
     "zod": "^3.24.2"
   },
