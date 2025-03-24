@@ -265,3 +265,18 @@ export const getListingComments = async (req: Request, res: Response): Promise<v
         sendError(res, (error as Error).message || 'Failed to retrieve comments');
     }
 };
+
+// get listing types from supabase
+export const getListingTypes = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { data, error } = await supabase
+            .from('listing_types')
+            .select('*');
+
+        if (error) throw error;
+
+        sendSuccess(res, data, 'Listing types retrieved successfully', 200);
+    } catch (error) {
+        sendError(res, (error as Error).message || 'Failed to retrieve listing types');
+    }
+};

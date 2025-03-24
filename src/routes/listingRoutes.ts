@@ -6,7 +6,8 @@ import {
     updateListing,
     deleteListing,
     addComment,
-    getListingComments
+    getListingComments,
+    getListingTypes
 } from '../controllers/listingController';
 
 import { validate } from '../middleware/validationMiddleware';
@@ -20,6 +21,7 @@ const router = Router();
 router.get('/', getAllListings);
 router.get('/:id', getListingById);
 router.get('/:listing_id/comments', getListingComments);
+router.get("/listing-types", getListingTypes);
 
 // Protected routes (require authentication)
 router.post('/', authMiddleware, validate(createListingSchema), createListing);
