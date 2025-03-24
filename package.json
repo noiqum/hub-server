@@ -21,6 +21,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
     "@types/cors": "^2.8.17",
+    "@vercel/node": "^5.1.14",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

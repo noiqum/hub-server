@@ -5,7 +5,7 @@ import listingRoutes from "./routes/listingRoutes"
 import authMiddleware from './middleware/authMiddleware'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-
+import { VercelRequest, VercelResponse } from "@vercel/node";
 
 // Extend the Request interface to include the user property
 declare global {
@@ -30,9 +30,9 @@ app.use(cors(
 
 const PORT = process.env.PORT || 5000
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
+app.get("/", (req: express.Request, res: express.Response) => {
+    res.json({ message: "Hello from Vercel Server!" });
+});
 app.use('/api/auth', authRoutes)
 app.use("/api/listing", listingRoutes)
 // test route for protected route
